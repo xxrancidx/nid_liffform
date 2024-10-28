@@ -260,15 +260,6 @@
             });
         }
 
-        function initializeApp() {
-            liff.getProfile()
-                .then(profile => {
-                    $('input[name="name"]').val(profile.displayName);
-                })
-                .catch((err) => {
-                    console.log('プロフィール取得に失敗しました ', err);
-                });
-        }
         function sendText(text) {
             liff.sendMessages([{
                 'type': 'text',
