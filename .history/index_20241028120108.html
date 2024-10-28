@@ -264,17 +264,6 @@
             liff.getProfile()
                 .then(profile => {
                     $('input[name="name"]').val(profile.displayName);
-                    console.log('UserID:', profile.userId); // デバッグ用。本番環境では削除推奨
-                })
-                .catch((err) => {
-                    console.log('プロフィール取得に失敗しました ', err);
-                });
-        }
-
-        function initializeApp() {
-            liff.getProfile()
-                .then(profile => {
-                    $('input[name="name"]').val(profile.displayName);
                 })
                 .catch((err) => {
                     console.log('プロフィール取得に失敗しました ', err);
