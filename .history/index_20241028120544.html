@@ -45,13 +45,9 @@
 <body>
 
     <form class="w-75 mx-auto">
-        <p class="mt-3">デバッグ用Sub</p>
-        <div>
-            <input class="form-control w-100 mt-1" name="userSub" readonly>
-        </div>
         <p class="mt-3">出向した日付</p>
         <div>
-            <input class="form-control w-100 mt-1 datepicker" name="workDate" placeholder="ここをタップして下さい" required readonly>
+            <input class="form-control w-100 mt-1 datepicker" name="workDate" placeholder="ここをタップして下さい" required>
         </div>
         <p class="mt-3">報告者氏名</p>
         <div>
@@ -265,18 +261,25 @@
         }
 
         function initializeApp() {
-        liff.getProfile()
-            .then(profile => {
-                $('input[name="name"]').val(profile.displayName);
-                return liff.getDecodedIDToken();
-            })
-            .then(decodedIDToken => {
-                $('input[name="userSub"]').val(decodedIDToken.sub);
-            })
-            .catch((err) => {
-                console.log('プロフィール取得に失敗しました ', err);
-            });
-    }
+            liff.getProfile()
+                .then(profile => {
+                    $('input[name="name"]').val(profile.displayName);
+                    console.log('UserID:', profile.userId); // デバッグ用。本番環境では削除推奨
+                })
+                .catch((err) => {
+                    console.log('プロフィール取得に失敗しました ', err);
+                });
+        }
+
+        function initializeApp() {
+            liff.getProfile()
+                .then(profile => {
+                    $('input[name="name"]').val(profile.displayName);
+                })
+                .catch((err) => {
+                    console.log('プロフィール取得に失敗しました ', err);
+                });
+        }
         function sendText(text) {
             liff.sendMessages([{
                 'type': 'text',
@@ -391,12 +394,11 @@
             $('form').submit(function () {
                 const workDate = $('input[name="workDate"]').val();
                 const name = $('input[name="name"]').val();
-                const userSub = $('input[name="userSub"]').val();
                 const assignmentDetails = $('select[name="assignmentDetails"]').val();
                 const workDetails = assignmentDetails === '報告のみ' ? '' : $('input[name="workDetails"]').val();
                 const otherAssignments = $('select[name="otherAssignments"]').val();
                 
-                let msg = `識別子：${userSub}\n日付：${workDate}\n氏名：${name}\n出向内容：${assignmentDetails}\n現場名：${workDetails}\n他の出向報告：${otherAssignments}`;
+                let msg = `${workDate}\n${name}\n${assignmentDetails}\n${workDetails}\n${otherAssignments}`;
 
                 if (otherAssignments === 'はい') {
                     for (let i = 1; i <= 5; i++) {

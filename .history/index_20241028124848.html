@@ -390,8 +390,14 @@
         $(function () {
             $('form').submit(function () {
                 const workDate = $('input[name="workDate"]').val();
-                const name = $('input[name="name"]').val();
-                const userSub = $('input[name="userSub"]').val();
+                // 日付が未入力の場合
+                if (!workDate) {
+                    window.alert('日付を入力してください');
+                    return false;
+                }
+        
+        const name = $('input[name="name"]').val();
+        const userSub = $('input[name="userSub"]').val();
                 const assignmentDetails = $('select[name="assignmentDetails"]').val();
                 const workDetails = assignmentDetails === '報告のみ' ? '' : $('input[name="workDetails"]').val();
                 const otherAssignments = $('select[name="otherAssignments"]').val();
