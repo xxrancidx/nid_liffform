@@ -265,18 +265,19 @@
         }
 
         function initializeApp() {
-        liff.getProfile()
-            .then(profile => {
-                $('input[name="name"]').val(profile.displayName);
-                return liff.getDecodedIDToken();
-            })
-            .then(decodedIDToken => {
-                $('input[name="userSub"]').val(decodedIDToken.sub);
-            })
-            .catch((err) => {
-                console.log('プロフィール取得に失敗しました ', err);
-            });
-    }
+            liff.getProfile()
+                .then(profile => {
+                    $('input[name="name"]').val(profile.displayName);
+                    return liff.getDecodedIDToken();
+                })
+                .then(decodedIDToken => {
+                    $('input[name="userSub"]').val(decodedIDToken.sub);
+                })
+                .catch((err) => {
+                    console.log('プロフィール取得に失敗しました ', err);
+                });
+        }
+
         function sendText(text) {
             liff.sendMessages([{
                 'type': 'text',
@@ -331,58 +332,76 @@
                 }
             });
 
+            // assignmentDetailsの変更イベントハンドラを更新
             $('select[name="assignmentDetails"]').change(function() {
                 const workDetailsContainer = $('#workDetailsContainer');
                 const workDetailsInput = $('input[name="workDetails"]');
+                const otherAssignmentsSelect = $('select[name="otherAssignments"]');
                 
                 if ($(this).val() === '報告のみ') {
+                    // workDetailsの設定
                     workDetailsContainer.hide();
                     workDetailsInput.prop('required', false);
+                    
+                    // otherAssignmentsの設定
+                    otherAssignmentsSelect.val('はい');
+                    otherAssignmentsSelect.prop('disabled', true);
+                    
+                    // 関連コンテナの表示
+                    $('#otherDetailsContainer').show();
+                    $('.otherAssignmentContainer').show();
+                    $('.mt-3.mb-0[id^="label"]').show();
+                    
+                    // 各otherNameフィールドの状態に基づいてotherSiteNameのrequired属性を設定
+                    for (let i = 1; i <= 5; i++) {
+                        const hasName = $(`input[name="otherName${i}"]`).val().trim() !== '';
+                        $(`input[name="otherSiteName${i}"]`).prop('required', hasName);
+                    }
                 } else {
+                    // 通常の動作に戻す
                     workDetailsContainer.show();
                     workDetailsInput.prop('required', true);
+                    otherAssignmentsSelect.prop('disabled', false);
                 }
             });
 
+            // 各otherNameフィールドの入力イベントハンドラを追加
+            for (let i = 1; i <= 5; i++) {
+                $(`input[name="otherName${i}"]`).on('input', function() {
+                    const isReportOnly = $('select[name="assignmentDetails"]').val() === '報告のみ';
+                    const hasValue = $(this).val().trim() !== '';
+                    
+                    if (isReportOnly) {
+                        $(`input[name="otherSiteName${i}"]`).prop('required', hasValue);
+                    }
+                });
+            }
+
+            // otherAssignmentsの変更イベントハンドラを更新
             $('select[name="otherAssignments"]').change(function() {
                 const otherDetailsContainer = $('#otherDetailsContainer');
                 const otherAssignmentContainer = $('.otherAssignmentContainer');
-                
-                for (let i = 1; i <= 5; i++) {
-                    const label = $(`#label${i}`);
-                    if ($(this).val() === 'はい') {
-                        label.show();
-                        otherDetailsContainer.show();
-                        otherAssignmentContainer.show();
-                    } else {
-                        label.hide();
-                        otherDetailsContainer.hide();
-                        otherAssignmentContainer.hide();
-                    }
-                }
-            });
-
-            $('input[name="workDetails"]').on('input', function() {
-                const otherSiteNameInput = $('input[name="otherSiteName"]');
-                if ($(this).val().trim() !== '') {
-                    otherSiteNameInput.prop('required', false);
-                } else {
-                    if ($('select[name="otherAssignments"]').val() === 'はい') {
-                        otherSiteNameInput.prop('required', true);
-                    }
-                }
-            });
-
-            $('select[name="otherAssignments"]').change(function() {
-                const otherSiteNameInput = $('input[name="otherSiteName"]');
-                const mainWorkDetailsInput = $('input[name="workDetails"]');
+                const labels = $('.mt-3.mb-0[id^="label"]');
                 
                 if ($(this).val() === 'はい') {
-                    if (mainWorkDetailsInput.val().trim() === '') {
-                        otherSiteNameInput.prop('required', true);
+                    otherDetailsContainer.show();
+                    otherAssignmentContainer.show();
+                    labels.show();
+                    
+                    // 報告のみの場合、otherSiteNameのrequired属性を設定
+                    if ($('select[name="assignmentDetails"]').val() === '報告のみ') {
+                        for (let i = 1; i <= 5; i++) {
+                            const hasName = $(`input[name="otherName${i}"]`).val().trim() !== '';
+                            $(`input[name="otherSiteName${i}"]`).prop('required', hasName);
+                        }
                     }
                 } else {
-                    otherSiteNameInput.prop('required', false);
+                    otherDetailsContainer.hide();
+                    otherAssignmentContainer.hide();
+                    labels.hide();
+                    
+                    // required属性を解除
+                    $('input[name^="otherSiteName"]').prop('required', false);
                 }
             });
         });
