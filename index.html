@@ -412,7 +412,8 @@
                             if (halfDay > 0) counts.push(`半日${halfDay}名`);
                             if (night > 0) counts.push(`夜間${night}名`);
 
-                            msg += `\n${i}. ${otherName}/${counts.join(',')}/${siteName}`;
+                            const displaySiteName = siteName.trim() ? siteName : workDetails;
+                            msg += `\n${i}. ${otherName}/${counts.join(',')}/${displaySiteName}`;
                         }
                     }
                 }
