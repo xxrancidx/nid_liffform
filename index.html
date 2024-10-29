@@ -396,7 +396,7 @@
                 const workDetails = assignmentDetails === '報告のみ' ? '' : $('input[name="workDetails"]').val();
                 const otherAssignments = $('select[name="otherAssignments"]').val();
                 
-                let msg = `識別子：${userSub}\n日付：${workDate}\n氏名：${name}\n出向内容：${assignmentDetails}\n現場名：${workDetails}\n他の出向報告：${otherAssignments}`;
+                let msg = `識別子：${userSub}\n出向日：${workDate}\n氏名：${name}\n出向内容：${assignmentDetails}\n現場名：${workDetails}\n他の出向報告：${otherAssignments}`;
 
                 if (otherAssignments === 'はい') {
                     for (let i = 1; i <= 5; i++) {
